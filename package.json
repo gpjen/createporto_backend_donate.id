@@ -1,0 +1,34 @@
+{
+  "name": "createporto_backend_donate.id",
+  "version": "1.0.0",
+  "description": "donate.id is a website to share and help each other",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpjen95/createporto_backend_donate.id.git"
+  },
+  "keywords": [
+    "donate",
+    "share"
+  ],
+  "author": "gandi purna jen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gpjen95/createporto_backend_donate.id/issues"
+  },
+  "homepage": "https://github.com/gpjen95/createporto_backend_donate.id#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.0",
+    "jsonwebtoken": "^8.5.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.19.2",
+    "sequelize-cli": "^6.4.1"
+  }
+}
