@@ -2,8 +2,9 @@
 require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
-const app = express();
+const { sequelize } = require("./app/db/models");
 
+const app = express();
 const port = process.env.APP_PORT || 3000;
 
 //midleware
@@ -33,6 +34,12 @@ app.use((err, req, res, next) => {
 });
 
 // run server
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`app listen on port ${port}`);
+  try {
+    await sequelize.authenticate();
+    console.log("/ database conection success");
+  } catch (error) {
+    console.log("### ", error.message);
+  }
 });
