@@ -23,6 +23,12 @@ module.exports = {
       profile: {
         type: Sequelize.STRING,
       },
+      gender: {
+        type: Sequelize.ENUM("male", "female"),
+      },
+      status: {
+        type: Sequelize.ENUM("admin", "user"),
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
