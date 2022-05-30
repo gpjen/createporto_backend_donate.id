@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 module.exports = {
   development: {
     username: process.env.DB_USERNAME,
@@ -19,5 +21,8 @@ module.exports = {
     database: process.env.DB_PRODUCTION,
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
+  },
+  devine: {
+    freezeTableName: true,
   },
 };

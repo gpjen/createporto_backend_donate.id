@@ -38,7 +38,7 @@ app.listen(port, async () => {
   console.log(`app listen on port ${port}`);
   try {
     await sequelize.authenticate();
-    console.log("/ database conection success");
+    console.log("> database conection success");
   } catch (error) {
     console.log("### ", error.message);
   }
