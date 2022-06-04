@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       phone: DataTypes.STRING,
       profile: DataTypes.STRING,
       gender: DataTypes.ENUM("male", "female"),
-      status: DataTypes.ENUM("admin", "user"),
+      status: DataTypes.ENUM("superAdmin", "admin", "user"),
     },
     {
       sequelize,

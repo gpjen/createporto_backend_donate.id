@@ -27,7 +27,7 @@ module.exports = {
         type: Sequelize.ENUM("male", "female"),
       },
       status: {
-        type: Sequelize.ENUM("admin", "user"),
+        type: Sequelize.ENUM("superAdmin", "admin", "user"),
       },
       createdAt: {
         allowNull: false,
