@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const { sequelize } = require("./app/db/models");
+const routes = require("./src/routes");
 
 const app = express();
 const port = process.env.APP_PORT || 3000;
@@ -13,7 +14,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routes
-app.get("/", (req, res) => {
+app.use("/api/v1", routes);
+
+app.get("/test", (req, res) => {
   res.send("oke baik");
 });
 
