@@ -8,12 +8,13 @@ const {
 
 //create new fund
 exports.newFunds = async (req, res, next) => {
-  const { data } = req.body;
+  //   const { data } = req.body;
   try {
     res.status(200).json({
       status: "success",
       message: `create new fund`,
-      data: data,
+      file: req.files,
+      data: req.body,
     });
   } catch (error) {
     next(error);
