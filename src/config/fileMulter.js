@@ -13,21 +13,22 @@ exports.storage = (dir) => {
 };
 
 exports.fileFilter = (field, typeFile = "file") => {
-  let regexExtention = /.*/;
-  if (typeFile === "image") {
-    regexExtention = /\.(jpg|png|JPG|JPEG|PNG|gif|GIF)$/;
-  } else if (typeFile === "document") {
-    regexExtention = /\.(pdf|doc|docx|ppt|pptx|xls|xlsx)$/;
-  }
   return (req, file, cb) => {
+    let regexExtention = /.*/;
+    if (typeFile === "image") {
+      regexExtention = /\.(jpg|png|JPG|JPEG|PNG|gif|GIF)$/;
+    } else if (typeFile === "document") {
+      regexExtention = /\.(pdf|doc|docx|ppt|pptx|xls|xlsx)$/;
+    }
     if (file.fieldname === field) {
       if (!file.originalname.match(regexExtention)) {
-        req.fileVallidationError = `only ${typeFile} file allowed`;
-        return cb(new Error(`only ${typeFile} file format allowed`), false);
+        console.log("--->", file);
+        req.fileVallidationError = `${file.originalname} not supported ${typeFile} format`;
+        return cb(new Error(`format type not supported`), false);
       }
     }
     cb(null, true);
   };
 };
 
-exports.maxSize = (sizeInMB) => sizeInMB * 1024 * 1000;
+exports.maxSize = (sizeInMB) => sizeInMB * 1024 * 1024;
