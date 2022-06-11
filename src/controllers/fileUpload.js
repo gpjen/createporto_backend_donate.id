@@ -1,6 +1,9 @@
 const multer = require("multer");
 const { storage, maxSize, fileFilter } = require("../config/fileMulter");
 
+//validator
+const { addFundValidation } = require("../validation/fundValidation");
+
 exports.fundImageFormValidation = (fieldImg) => {
   // set multer
   const dirSave = "public/images/img_thumb";
@@ -15,30 +18,30 @@ exports.fundImageFormValidation = (fieldImg) => {
     },
   }).array(fieldImg, maxFileUpload);
 
-  // req handling
   return (req, res, next) => {
     upload(req, res, function (err) {
+      let errorMessage = {
+        status: "failed",
+        message: "",
+      };
+
       if (req.fileVallidationError) {
-        return res.status(400).json({
-          message: req.fileVallidationError,
-        });
+        errorMessage.message = req.fileVallidationError;
+        return res.status(400).json(errorMessage);
       }
-      if (!req.files && !err) {
-        return res.status(400).json({
-          message: `please select ${typeFile} upload`,
-        });
+      if (req.files.length === 0 && !err) {
+        errorMessage.message = `please select ${typeFile} upload`;
+        return res.status(400).json(errorMessage);
       }
       if (err) {
         if (err.code === "LIMIT_FILE_SIZE") {
-          return res.status(400).json({
-            message: `max ${typeFile} size is ${sizeInMb} Mb`,
-          });
+          console.log("handle this file size");
         } else if ((err.code = "LIMIT_UNEXPECTED_FILE")) {
-          return res.status(400).json({
-            message: `max ${typeFile} upload is ${maxFileUpload} `,
-          });
+          errorMessage.message = `max ${typeFile} upload is ${maxFileUpload} `;
+          return res.status(400).json(errorMessage);
         }
         return res.status(400).json({
+          status: "failed",
           message: err,
         });
       }
