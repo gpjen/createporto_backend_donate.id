@@ -22,7 +22,6 @@ exports.fileFilter = (field, typeFile = "file") => {
     }
     if (file.fieldname === field) {
       if (!file.originalname.match(regexExtention)) {
-        console.log("--->", file);
         req.fileVallidationError = `${file.originalname} not supported ${typeFile} format`;
         return cb(new Error(`format type not supported`), false);
       }
@@ -30,5 +29,3 @@ exports.fileFilter = (field, typeFile = "file") => {
     cb(null, true);
   };
 };
-
-exports.maxSize = (sizeInMB) => sizeInMB * 1024 * 1024;
