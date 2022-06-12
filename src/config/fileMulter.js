@@ -1,5 +1,7 @@
 //import mackage multer
 const multer = require("multer");
+const sharp = require("sharp");
+const fs = require("fs");
 
 exports.storage = (dir) => {
   return multer.diskStorage({
@@ -28,4 +30,49 @@ exports.fileFilter = (field, typeFile = "file") => {
     }
     cb(null, true);
   };
+};
+
+exports.resizeImgProfile = async (req) => {
+  const file = req.file;
+  const dir = "./public/images/profile/";
+  const dirSave = [
+    { size: "lg", wh: 500 },
+    { size: "sm", wh: 140 },
+  ];
+
+  dirSave.map((patern) => {
+    const { size, wh } = patern;
+    const path = `${dir}${size}/`;
+    fs.access(path, (err) => {
+      if (err) {
+        fs.mkdirSync(path);
+      }
+    });
+
+    sharp(file.path)
+      .resize(wh, wh)
+      .toFile(`${path}${file.filename}`, (err, info) => {
+        if (err) throw err;
+        console.log(`compress to ${size} file:${file.originalname}`);
+      });
+  });
+};
+
+exports.resizeImgThumb = async (req) => {
+  const dir = "./public/images/img_thumb";
+
+  fs.access(dir, (err) => {
+    if (err) {
+      fs.mkdirSync(dir);
+    }
+  });
+
+  req.files.map((file) => {
+    sharp(file.path)
+      .resize(600)
+      .toFile(`${dir}/${file.filename}`, (err, info) => {
+        if (err) throw err;
+        console.log(`compress file : ${file.originalname}`);
+      });
+  });
 };
