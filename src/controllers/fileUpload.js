@@ -1,16 +1,21 @@
 const multer = require("multer");
+const fs = require("fs");
 const { storage, fileFilter, resizeImgThumb } = require("../config/fileMulter");
 
 //validator
-const { addFundValidation } = require("../validation/fundValidation");
 
 exports.fundImageFormValidation = (fieldImg) => {
   // set multer
-  const dirSave = "public/images/uploads";
+  const dirUpload = "public/images/uploads";
+  fs.mkdir(dirUpload, { recursive: true }, (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
   const maxFileUpload = 3;
   const typeFile = "image";
   const upload = multer({
-    storage: storage(dirSave),
+    storage: storage(dirUpload),
     fileFilter: fileFilter(fieldImg, typeFile),
   }).array(fieldImg, maxFileUpload);
 

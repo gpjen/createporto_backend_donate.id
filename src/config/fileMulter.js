@@ -58,7 +58,7 @@ exports.resizeImgProfile = async (req) => {
   });
 };
 
-exports.resizeImgThumb = async (req) => {
+exports.resizeImgThumb = (req) => {
   const dir = "./public/images/img_thumb";
 
   fs.access(dir, (err) => {
