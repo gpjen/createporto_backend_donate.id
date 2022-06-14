@@ -1,3 +1,4 @@
+const fs = require("fs");
 // import database
 const {
   funds,
@@ -6,9 +7,17 @@ const {
   users,
 } = require("../../app/db/models");
 
+const { emptyDirUpload } = require("../config/fileMulter");
+
 //create new fund
 exports.newFunds = async (req, res, next) => {
   try {
+    fs.unlinkSync(req.files[0].path, (err) => {
+      if (err) {
+        console.log("error-----------");
+      }
+    });
+    // emptyDirUpload();
     res.status(200).json({
       status: "success",
       message: `create new fund`,

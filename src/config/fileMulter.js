@@ -76,3 +76,17 @@ exports.resizeImgThumb = (req) => {
       });
   });
 };
+
+exports.emptyDirUpload = () => {
+  const dir = "./public/images/uploads";
+  fs.readdir(dir, (err, files) => {
+    if (err) throw err;
+    Promise.all(
+      files.map((f) => {
+        fs.unlink(`${dir}/${f}`, (err) => {
+          if (err) throw err;
+        });
+      })
+    );
+  });
+};

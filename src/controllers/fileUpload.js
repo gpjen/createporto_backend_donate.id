@@ -3,13 +3,14 @@ const fs = require("fs");
 const { storage, fileFilter, resizeImgThumb } = require("../config/fileMulter");
 
 //validator
+const { validationResult } = require("express-validator");
 
 exports.fundImageFormValidation = (fieldImg) => {
   // set multer
   const dirUpload = "public/images/uploads";
   fs.mkdir(dirUpload, { recursive: true }, (err) => {
     if (err) {
-      console.log(err);
+      console.log(err.message);
     }
   });
   const maxFileUpload = 3;

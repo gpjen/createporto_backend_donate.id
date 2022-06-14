@@ -39,3 +39,39 @@ exports.fundIdValidation = [
     next();
   },
 ];
+
+exports.createFundBodyValidation = [
+  body("tittle")
+    .notEmpty()
+    .withMessage("tittle is require")
+    .bail()
+    .isLength({ min: 3 })
+    .withMessage("tittle min 3 character")
+    .escape(),
+  body("goal")
+    .notEmpty()
+    .withMessage("goal is require")
+    .bail()
+    .isNumeric()
+    .withMessage("goal must be number")
+    .trim(),
+  body("desc")
+    .notEmpty()
+    .withMessage("desc is require")
+    .bail()
+    .isString()
+    .withMessage("desc must be string")
+    .escape(),
+
+  (req, res, next) => {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      return res.status(400).json({
+        status: "failed",
+        message: "failed validation form",
+        error: error.errors,
+      });
+    }
+    next();
+  },
+];
