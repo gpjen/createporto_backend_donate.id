@@ -7,8 +7,6 @@ const {
   users,
 } = require("../../app/db/models");
 
-const { emptyDirUpload } = require("../config/fileMulter");
-
 //create new fund
 exports.newFunds = async (req, res, next) => {
   try {
