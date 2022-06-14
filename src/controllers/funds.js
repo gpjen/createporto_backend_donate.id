@@ -10,12 +10,6 @@ const {
 //create new fund
 exports.newFunds = async (req, res, next) => {
   try {
-    fs.unlinkSync(req.files[0].path, (err) => {
-      if (err) {
-        console.log("error-----------");
-      }
-    });
-    // emptyDirUpload();
     res.status(200).json({
       status: "success",
       message: `create new fund`,
