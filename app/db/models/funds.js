@@ -8,6 +8,12 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      funds.belongsTo(models.users, {
+        as: "user",
+        foreignKey: {
+          name: "idUser",
+        },
+      });
       funds.hasMany(models.payments, {
         as: "payment",
         foreignKey: {
@@ -15,17 +21,10 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
-      funds.hasMany(models.images_thumbnail, {
+      funds.hasMany(models.imagesThumbnails, {
         as: "img-thumb",
         foreignKey: {
           name: "idFund",
-        },
-      });
-
-      funds.belongsTo(models.users, {
-        as: "user",
-        foreignKey: {
-          name: "id",
         },
       });
     }
