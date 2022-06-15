@@ -1,20 +1,28 @@
-const fs = require("fs");
 // import database
 const {
   funds,
   payments,
-  images_thumbnail,
+  imagesThumbnails,
   users,
 } = require("../../app/db/models");
 
 //create new fund
 exports.newFunds = async (req, res, next) => {
+  const { tittle, goal, desc } = req.body;
+  const idUser = req.user?.id || 1;
+  const img = req.files.map((i) => i.filename);
+
   try {
+    // input form to database
+    const addFundsData = await funds.create({ tittle, goal, desc, idUser });
+    // input images to databse
+    img.map((i) =>
+      imagesThumbnails.create({ img: i, idFund: addFundsData.id })
+    );
+
     res.status(200).json({
       status: "success",
       message: `create new fund`,
-      file: req.files,
-      data: req.body,
     });
   } catch (error) {
     next(error);
@@ -39,7 +47,7 @@ exports.getFunds = async (req, res, next) => {
           },
         },
         {
-          model: images_thumbnail,
+          model: imagesThumbnails,
           as: "img-thumb",
           attributes: ["img"],
         },
@@ -69,11 +77,11 @@ exports.getFundById = async (req, res, next) => {
           model: users,
           as: "user",
           attributes: {
-            exclude: ["createdAt", "updatedAt", "password", "status", ""],
+            exclude: ["createdAt", "updatedAt", "password", "status"],
           },
         },
         {
-          model: images_thumbnail,
+          model: imagesThumbnails,
           as: "img-thumb",
           attributes: ["img"],
         },
