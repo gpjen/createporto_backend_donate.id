@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 // import database
 const {
   funds,
@@ -67,7 +68,7 @@ exports.getFunds = async (req, res, next) => {
   }
 };
 
-//read funds by Id
+// read funds by Id
 exports.getFundById = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -102,6 +103,34 @@ exports.getFundById = async (req, res, next) => {
       status: "success",
       message: `find fund ${id}`,
       data: !data ? "no data" : data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// update funds
+exports.updateFunds = async (req, res, next) => {
+  const idUser = 1;
+  const { tittle, goal, desc } = req.body;
+  const { fundId } = req.params;
+  // const files = req.files.filter()
+
+  try {
+    // update fund
+    const fundData = await funds.update(
+      { tittle, goal, desc },
+      {
+        where: {
+          [Op.and]: [{ id: fundId }, { idUser }],
+        },
+      }
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: "update fund",
+      fundData,
     });
   } catch (error) {
     next(error);
