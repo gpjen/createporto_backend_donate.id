@@ -1,12 +1,13 @@
 const fs = require("fs");
 const sharp = require("sharp");
+const { Op } = require("sequelize");
 const { validationResult, body, param } = require("express-validator");
 
 // models
 const { funds } = require("../../app/db/models");
 
 //management file upload
-const { imgThumbUpload } = require("../midleware/multerConfig");
+const { imgThumbUpload, imgThumbUpdate } = require("../midleware/multerConfig");
 
 // validation create fund
 exports.addFundImagesValidation = (req, res, next) => {
@@ -29,7 +30,7 @@ exports.addFundImagesValidation = (req, res, next) => {
         errSchema.message = `max file select is 3 file`;
         return res.status(400).json(errSchema);
       } else if (err.ccode === "LIMIT_FILE_SIZE") {
-        errSchema.message = `limit file size is 5 Mb`;
+        errSchema.message = `limit file size max is 5 Mb`;
         return res.status(400).json(errSchema);
       }
       errSchema.message = err;
@@ -93,6 +94,78 @@ exports.addFundBodyValidation = [
           });
         });
     });
+    next();
+  },
+];
+
+// validation update funds
+exports.updateFundsValidation = (req, res, next) => {
+  imgThumbUpdate(req, res, (err) => {
+    let errSchema = {
+      status: "failed",
+      message: "validate update img",
+    };
+
+    if (req.fileVallidationError) {
+      errSchema.message = req.fileVallidationError;
+      return res.status(400).json(errSchema);
+    }
+
+    if (err) {
+      if (err.ccode === "LIMIT_FILE_SIZE") {
+        errSchema.message = `limit file size max is 5 Mb`;
+        return res.status(400).json(errSchema);
+      } else if (err.code === "LIMIT_UNEXPECTED_FILE") {
+        errSchema.message = `field incorect or double`;
+        return res.status(400).json(errSchema);
+      }
+      return res.status(400).json({
+        status: "failed",
+        message: err,
+      });
+    }
+    return next();
+  });
+};
+
+// validate update body
+exports.updateFundBodyParamValidation = [
+  param("fundId")
+    .trim()
+    .isNumeric()
+    .withMessage("param must be number")
+    .bail()
+    .custom(async (val, { req }) => {
+      const fundId = await funds.findOne({
+        where: {
+          [Op.and]: [{ id: val }, { idUser: 1 }],
+        },
+      });
+      if (!fundId) {
+        return Promise.reject("invalid params Id or user Id");
+      }
+    }),
+  body("tiitle").optional().isString(),
+  body("goal").optional().isNumeric(),
+  body("desc").optional().isString(),
+  async (req, res, next) => {
+    const img1 = req.files?.img1;
+    const img2 = req.files?.img2;
+    const img3 = req.files?.img3;
+
+    img1 ? console.log("update img1") : console.log("img1 kosong");
+    img2 ? console.log("update img2") : console.log("img2 kosong");
+    img3 ? console.log("update img3") : console.log("img3 kosong");
+
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      return res.status(200).json({
+        status: "failed",
+        message: "error validate body or params",
+        error: error.errors,
+      });
+    }
+
     next();
   },
 ];

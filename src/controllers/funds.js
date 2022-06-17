@@ -118,19 +118,20 @@ exports.updateFunds = async (req, res, next) => {
 
   try {
     // update fund
-    const fundData = await funds.update(
-      { tittle, goal, desc },
-      {
-        where: {
-          [Op.and]: [{ id: fundId }, { idUser }],
-        },
-      }
-    );
+    // const fundData = await funds.update(
+    //   { tittle, goal, desc },
+    //   {
+    //     where: {
+    //       [Op.and]: [{ id: fundId }, { idUser }],
+    //     },
+    //   }
+    // );
 
     res.status(200).json({
       status: "success",
       message: "update fund",
-      fundData,
+      body: req.body,
+      file: req.files,
     });
   } catch (error) {
     next(error);

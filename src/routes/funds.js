@@ -5,6 +5,8 @@ const {
   fundIdValidation,
   addFundImagesValidation,
   addFundBodyValidation,
+  updateFundsValidation,
+  updateFundBodyParamValidation,
 } = require("../validation/fundValidation");
 // import controllers
 const {
@@ -17,6 +19,11 @@ const {
 route.get("/fund/:id", fundIdValidation, getFundById);
 route.get("/funds", getFunds);
 route.post("/fund", addFundImagesValidation, addFundBodyValidation, newFunds);
-route.patch("/fund/:fundId", updateFunds);
+route.patch(
+  "/fund/:fundId",
+  updateFundsValidation,
+  updateFundBodyParamValidation,
+  updateFunds
+);
 
 module.exports = route;
