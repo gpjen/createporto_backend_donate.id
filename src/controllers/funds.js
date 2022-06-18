@@ -72,9 +72,9 @@ exports.getFunds = async (req, res, next) => {
 
 // read funds by Id
 exports.getFundById = async (req, res, next) => {
-  const { id } = req.params;
+  const { fundId } = req.params;
   try {
-    const data = await funds.findByPk(id, {
+    const data = await funds.findByPk(fundId, {
       include: [
         {
           model: users,
@@ -103,7 +103,7 @@ exports.getFundById = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: `find fund ${id}`,
+      message: `find fund ${fundId}`,
       data: !data ? "no data" : data,
     });
   } catch (error) {
@@ -137,13 +137,11 @@ exports.updateFunds = async (req, res, next) => {
         .toFile(`./public/images/img_thumb/${newImg.filename}`)
         .then(() => {
           fs.unlink(newImg.path, (err) => {
-            if (err) throw err;
+            if (err) console.log("failed delete new images");
           });
-          fs.access(`./public/images/img_thumb/${imgDb.img}`, (err) => {
-            if (err) throw err;
-            fs.unlink(`./public/images/img_thumb/${imgDb.img}`, (err) => {
-              if (err) throw err;
-            });
+
+          fs.unlink(`./public/images/img_thumb/${imgDb.img}`, (err) => {
+            if (err) console.log("failed delete images db");
           });
         });
     };
@@ -155,7 +153,7 @@ exports.updateFunds = async (req, res, next) => {
         .toFile(`./public/images/img_thumb/${img.filename}`)
         .then(() => {
           fs.unlink(img.path, (err) => {
-            if (err) throw err;
+            if (err) console.log("failed delete new images");
           });
         });
     };
@@ -187,6 +185,35 @@ exports.updateFunds = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "update fund",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// delete user
+exports.deleteFundById = async (req, res, next) => {
+  const { fundId } = req.params;
+  try {
+    // get images name
+    const fileImgDb = await imagesThumbnails.findAll({
+      where: { idFund: fundId },
+    });
+
+    // delete fund
+    funds.destroy({ where: { id: fundId } });
+
+    // delete images
+    fileImgDb.forEach((img) => {
+      fs.unlink(`./public/images/img_thumb/${img.img}`, (err) => {
+        if (err) console.log("failed del images");
+      });
+    });
+
+    //response
+    res.status(200).json({
+      status: "success",
+      message: "delete fund",
     });
   } catch (error) {
     next(error);

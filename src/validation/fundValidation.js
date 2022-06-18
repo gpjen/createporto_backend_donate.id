@@ -4,7 +4,7 @@ const { Op } = require("sequelize");
 const { validationResult, body, param } = require("express-validator");
 
 // models
-const { funds, imagesThumbnails } = require("../../app/db/models");
+const { funds } = require("../../app/db/models");
 
 //management file upload
 const { imgThumbUpload, imgThumbUpdate } = require("../midleware/multerConfig");
@@ -29,7 +29,7 @@ exports.addFundImagesValidation = (req, res, next) => {
       if (err.code === "LIMIT_UNEXPECTED_FILE") {
         errSchema.message = `max file select is 3 file`;
         return res.status(400).json(errSchema);
-      } else if (err.ccode === "LIMIT_FILE_SIZE") {
+      } else if (err.code === "LIMIT_FILE_SIZE") {
         errSchema.message = `limit file size max is 5 Mb`;
         return res.status(400).json(errSchema);
       }
@@ -151,6 +151,22 @@ exports.updateFundBodyParamValidation = [
   async (req, res, next) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
+      if (req.files.img1) {
+        fs.unlink(req.files.img1[0].path, (err) => {
+          if (err) console.log("remove file by validation update");
+        });
+      }
+      if (req.files.img2) {
+        fs.unlink(req.files.img2[0].path, (err) => {
+          if (err) console.log("remove file by validation update");
+        });
+      }
+      if (req.files.img3) {
+        fs.unlink(req.files.img3[0].path, (err) => {
+          if (err) console.log("remove file by validation update");
+        });
+      }
+
       return res.status(200).json({
         status: "failed",
         message: "error validate body or params",
@@ -164,18 +180,18 @@ exports.updateFundBodyParamValidation = [
 
 // validation id param
 exports.fundIdValidation = [
-  param("id")
+  param("fundId")
     .trim()
     .isNumeric()
     .withMessage("params must be number")
     .bail()
     .custom(async (val) => {
-      const fundId = await funds.findOne({
+      const id = await funds.findOne({
         where: {
           id: val,
         },
       });
-      if (!fundId) {
+      if (!id) {
         return Promise.reject("invalid params Id");
       }
     }),

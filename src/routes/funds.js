@@ -14,9 +14,10 @@ const {
   getFunds,
   getFundById,
   updateFunds,
+  deleteFundById,
 } = require("../controllers/funds");
 
-route.get("/fund/:id", fundIdValidation, getFundById);
+route.get("/fund/:fundId", fundIdValidation, getFundById);
 route.get("/funds", getFunds);
 route.post("/fund", addFundImagesValidation, addFundBodyValidation, newFunds);
 route.patch(
@@ -25,5 +26,6 @@ route.patch(
   updateFundBodyParamValidation,
   updateFunds
 );
+route.delete("/fund/:fundId", fundIdValidation, deleteFundById);
 
 module.exports = route;
