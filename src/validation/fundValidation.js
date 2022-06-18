@@ -4,7 +4,7 @@ const { Op } = require("sequelize");
 const { validationResult, body, param } = require("express-validator");
 
 // models
-const { funds } = require("../../app/db/models");
+const { funds, imagesThumbnails } = require("../../app/db/models");
 
 //management file upload
 const { imgThumbUpload, imgThumbUpdate } = require("../midleware/multerConfig");
@@ -112,7 +112,7 @@ exports.updateFundsValidation = (req, res, next) => {
     }
 
     if (err) {
-      if (err.ccode === "LIMIT_FILE_SIZE") {
+      if (err.code === "LIMIT_FILE_SIZE") {
         errSchema.message = `limit file size max is 5 Mb`;
         return res.status(400).json(errSchema);
       } else if (err.code === "LIMIT_UNEXPECTED_FILE") {
@@ -149,14 +149,6 @@ exports.updateFundBodyParamValidation = [
   body("goal").optional().isNumeric(),
   body("desc").optional().isString(),
   async (req, res, next) => {
-    const img1 = req.files?.img1;
-    const img2 = req.files?.img2;
-    const img3 = req.files?.img3;
-
-    img1 ? console.log("update img1") : console.log("img1 kosong");
-    img2 ? console.log("update img2") : console.log("img2 kosong");
-    img3 ? console.log("update img3") : console.log("img3 kosong");
-
     const error = validationResult(req);
     if (!error.isEmpty()) {
       return res.status(200).json({

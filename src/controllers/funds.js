@@ -1,4 +1,6 @@
 const { Op } = require("sequelize");
+const fs = require("fs");
+const sharp = require("sharp");
 // import database
 const {
   funds,
@@ -112,26 +114,79 @@ exports.getFundById = async (req, res, next) => {
 // update funds
 exports.updateFunds = async (req, res, next) => {
   const idUser = 1;
-  const { tittle, goal, desc } = req.body;
   const { fundId } = req.params;
-  // const files = req.files.filter()
+  const { tittle, goal, desc } = req.body;
+  const imageUpdate = [req.files?.img1, req.files?.img2, req.files?.img3];
 
   try {
+    // update imagesThumbnails
+    const imagesDb = await imagesThumbnails.findAll({
+      where: {
+        idFund: req.params.fundId,
+      },
+      attributes: ["id", "img"],
+    });
+
+    const updateImg = (imgDb, newImg) => {
+      imagesThumbnails.update(
+        { img: newImg.filename },
+        { where: { id: imgDb.id } }
+      );
+      sharp(newImg.path)
+        .resize(600)
+        .toFile(`./public/images/img_thumb/${newImg.filename}`)
+        .then(() => {
+          fs.unlink(newImg.path, (err) => {
+            if (err) throw err;
+          });
+          fs.access(`./public/images/img_thumb/${imgDb.img}`, (err) => {
+            if (err) throw err;
+            fs.unlink(`./public/images/img_thumb/${imgDb.img}`, (err) => {
+              if (err) throw err;
+            });
+          });
+        });
+    };
+
+    const addImg = (img) => {
+      imagesThumbnails.create({ img: img.filename, idFund: fundId });
+      sharp(img.path)
+        .resize(600)
+        .toFile(`./public/images/img_thumb/${img.filename}`)
+        .then(() => {
+          fs.unlink(img.path, (err) => {
+            if (err) throw err;
+          });
+        });
+    };
+
+    imageUpdate.forEach((image) => {
+      if (image) {
+        const { fieldname } = image[0];
+
+        if (fieldname === "img1") {
+          imagesDb[0]?.id ? updateImg(imagesDb[0], image[0]) : addImg(image[0]);
+        } else if (fieldname === "img2") {
+          imagesDb[1]?.id ? updateImg(imagesDb[1], image[0]) : addImg(image[0]);
+        } else if (fieldname === "img3") {
+          imagesDb[2]?.id ? updateImg(imagesDb[2], image[0]) : addImg(image[0]);
+        }
+      }
+    });
+
     // update fund
-    // const fundData = await funds.update(
-    //   { tittle, goal, desc },
-    //   {
-    //     where: {
-    //       [Op.and]: [{ id: fundId }, { idUser }],
-    //     },
-    //   }
-    // );
+    funds.update(
+      { tittle, goal, desc },
+      {
+        where: {
+          [Op.and]: [{ id: fundId }, { idUser }],
+        },
+      }
+    );
 
     res.status(200).json({
       status: "success",
       message: "update fund",
-      body: req.body,
-      file: req.files,
     });
   } catch (error) {
     next(error);
