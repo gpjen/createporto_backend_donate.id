@@ -63,3 +63,12 @@ exports.imgThumbUpdate = multer({
   { name: "img2", maxCount: 1 },
   { name: "img3", maxCount: 1 },
 ]);
+
+//img-thumbnail update img thumb
+exports.imgProfileUpload = multer({
+  storage,
+  fileFilter: imgFilter("imgProfile"),
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+}).single("imgProfile");
