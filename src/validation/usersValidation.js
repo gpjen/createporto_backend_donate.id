@@ -3,6 +3,9 @@ const { unlink } = require("fs");
 const sharp = require("sharp");
 const { validationResult, body, param } = require("express-validator");
 
+//import models
+const { users } = require("../../app/db/models");
+
 // file management
 const { imgProfileUpload } = require("../midleware/multerConfig");
 
@@ -46,14 +49,21 @@ exports.registerBodyValidation = [
     .escape()
     .trim(),
   body("email")
-    .toLowerCase()
     .notEmpty()
+    .toLowerCase()
+    .normalizeEmail()
     .withMessage("email is required")
     .bail()
     .isEmail()
     .withMessage("email must be valid")
     .bail()
-    .normalizeEmail(),
+    .custom((val) => {
+      return users.findOne({ where: { email: val } }).then(function (useEmail) {
+        if (useEmail) {
+          throw new Error("this email is already in use");
+        }
+      });
+    }),
   body("phone")
     .optional()
     .isString()
@@ -104,27 +114,26 @@ exports.registerBodyValidation = [
       });
     }
 
-    if (req.file) {
-      // resize images upload to large and small
-      sharp(req.file.path)
-        .resize(400, 400)
-        .toFile(`./public/images/profile/lg/${req.file.filename}`, (err) => {
-          if (err) throw err;
-          sharp(`./public/images/profile/lg/${req.file.filename}`)
-            .resize(100, 100)
-            .toFile(
-              `./public/images/profile/sm/${req.file.filename}`,
-              (err) => {
-                if (err) throw err;
-                // remove original image upload
-                unlink(req.file.path, (err) => {
-                  if (err) console.log("> ", err);
-                });
-              }
-            );
-        });
+    if (!req.file) {
+      next();
     }
 
-    next();
+    // resize images upload to large and small
+    sharp(req.file.path)
+      .resize(400, 400)
+      .toFile(`./public/images/profile/lg/${req.file.filename}`, (err) => {
+        if (err) throw err;
+        sharp(`./public/images/profile/lg/${req.file.filename}`)
+          .resize(100, 100)
+          .toFile(`./public/images/profile/sm/${req.file.filename}`, (err) => {
+            if (err) throw err;
+            // remove original image upload
+            unlink(req.file.path, (err) => {
+              if (err) console.log("> ", err);
+            });
+
+            next();
+          });
+      });
   },
 ];

@@ -11,7 +11,7 @@ exports.registerUser = async (req, res, next) => {
   const profile = req.file?.filename || "none";
 
   try {
-    user.create({
+    users.create({
       fullname,
       email,
       phone,
